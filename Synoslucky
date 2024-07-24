@@ -244,17 +244,8 @@ TrollTab:AddTextbox({
     end
 })
 
--- Debounce mechanism
-_G.LastCommandTime = 0
-
 -- Function to detect chat messages and execute commands
 local function onPlayerChatted(message)
-    -- Debounce mechanism to avoid multiple triggers
-    if tick() - _G.LastCommandTime < 0.5 then
-        return
-    end
-    _G.LastCommandTime = tick()
-
     -- Check for specific commands and execute corresponding functions
     local commandExecuted = false
 
@@ -297,7 +288,7 @@ local ColorChangerTab = Window:MakeTab({
     BorderColor = Color3.fromRGB(0, 0, 255)  -- Blue border
 })
 
-ColorChangerTab:AddLabel("Doesnt work on mobile,only on Pc")
+ColorChangerTab:AddLabel("Doesn't work on mobile, only on PC")
 
 -- Add color picker
 local colorPicker = ColorChangerTab:AddColorpicker({
@@ -322,7 +313,7 @@ local BallSpamTab = Window:MakeTab({
 -- Variable to track ball spam status
 local isSpamming = false
 
-BallSpamTab:AddLabel("spam alot of ball stats")
+BallSpamTab:AddLabel("Spam a lot of balls")
 
 -- Add toggle for spam ball
 BallSpamTab:AddButton({
