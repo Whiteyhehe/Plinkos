@@ -192,7 +192,7 @@ CurrencyGiverTab:AddTextbox({
     end
 })
 
--- Add Troll Commands tab with a border
+-- Troll Commands tab with a border
 local TrollTab = Window:MakeTab({
     Name = "Troll Commands 😈",
     Icon = "rbxassetid://4483345998",
@@ -204,21 +204,25 @@ local TrollTab = Window:MakeTab({
 _G.ActivateGiveCash = false
 _G.ActivateGiveTokens = false
 _G.ActivateGiveBest = false
+_G.ActivateGiveAll10x = false  -- New variable for the GiveAll10x command
 
 -- Default commands
 _G.CommandGiveCash = ";GiveCash"
 _G.CommandGiveTokens = ";GiveTokens"
 _G.CommandGiveBest = ";GiveBest"
+_G.CommandGiveAll10x = ";GiveAll10x"  -- New command for GiveAll10x
 
 -- Function to activate all commands
 local function activateAllCommands()
     _G.ActivateGiveCash = true
     _G.ActivateGiveTokens = true
     _G.ActivateGiveBest = true
+    _G.ActivateGiveAll10x = true  -- Activate GiveAll10x command
     print("All commands activated")
 end
 
 TrollTab:AddLabel("Troll Commands Improved")
+TrollTab:AddLabel("The GiveAll10x has a cooldown 30 second")
 
 -- Add Activate Commands button
 TrollTab:AddButton({
@@ -232,7 +236,7 @@ TrollTab:AddButton({
 -- Add Commands dropdown
 TrollTab:AddDropdown({
     Name = "Commands",
-    Options = {_G.CommandGiveCash, _G.CommandGiveTokens, _G.CommandGiveBest},
+    Options = {_G.CommandGiveCash, _G.CommandGiveTokens, _G.CommandGiveBest, _G.CommandGiveAll10x},
     Default = _G.CommandGiveCash,
     Callback = function(Value)
         -- Handle selection if needed
@@ -273,6 +277,17 @@ TrollTab:AddTextbox({
     end
 })
 
+TrollTab:AddTextbox({
+    Name = "Change GiveAll10x Command",
+    Default = _G.CommandGiveAll10x,
+    TextDisappear = true,
+    Callback = function(Value)
+        _G.CommandGiveAll10x = Value
+        print("GiveAll10x command changed to:", _G.CommandGiveAll10x)
+        sendNotification("Command Changed", "GiveAll10x command changed to: " .. _G.CommandGiveAll10x, "rbxassetid://4483345998")
+    end
+})
+
 -- Function to detect chat messages and execute commands
 local function onPlayerChatted(message)
     -- Check for specific commands and execute corresponding functions
@@ -298,6 +313,14 @@ local function onPlayerChatted(message)
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
             commandExecuted = true
         end
+    elseif _G.ActivateGiveAll10x and message:sub(1, #_G.CommandGiveAll10x) == _G.CommandGiveAll10x then
+        -- Execute GiveCash
+        local argsCash = {
+            [1] = workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.GiveCash
+        }
+        workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.PurchaseEvents:FireServer(unpack(argsCash))
+
+        commandExecuted = true
     end
 
     if not commandExecuted then
@@ -308,6 +331,7 @@ end
 -- Listen to the player's chat messages
 local player = game.Players.LocalPlayer
 player.Chatted:Connect(onPlayerChatted)
+
 
 -- Add Color Changer tab with a border
 local ColorChangerTab = Window:MakeTab({
