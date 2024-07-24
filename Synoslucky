@@ -193,7 +193,7 @@ local function activateAllCommands()
     print("All commands activated")
 end
 
-TrollTab:AddLabel("Troll Commands")
+TrollTab:AddLabel("Troll Commands Improved")
 
 -- Add Activate Commands button
 TrollTab:AddButton({
@@ -244,45 +244,50 @@ TrollTab:AddTextbox({
     end
 })
 
+-- Debounce mechanism
+_G.LastCommandTime = 0
+
 -- Function to detect chat messages and execute commands
-local function onPlayerChatted(player, message)
+local function onPlayerChatted(message)
+    -- Debounce mechanism to avoid multiple triggers
+    if tick() - _G.LastCommandTime < 0.5 then
+        return
+    end
+    _G.LastCommandTime = tick()
+
     -- Check for specific commands and execute corresponding functions
+    local commandExecuted = false
+
     if _G.ActivateGiveBest and message:sub(1, #_G.CommandGiveBest) == _G.CommandGiveBest then
         local amount = tonumber(message:sub(#_G.CommandGiveBest + 1):match("%d+")) -- Extract the amount from the message
-        print("Detected GiveBest command with amount:", amount)
         if amount then
             local args = {amount, "BestWin"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
-        else
-            print("Invalid amount for GiveBest command")
+            commandExecuted = true
         end
     elseif _G.ActivateGiveTokens and message:sub(1, #_G.CommandGiveTokens) == _G.CommandGiveTokens then
         local amount = tonumber(message:sub(#_G.CommandGiveTokens + 1):match("%d+")) -- Extract the amount from the message
-        print("Detected GiveTokens command with amount:", amount)
         if amount then
             game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
-        else
-            print("Invalid amount for GiveTokens command")
+            commandExecuted = true
         end
     elseif _G.ActivateGiveCash and message:sub(1, #_G.CommandGiveCash) == _G.CommandGiveCash then
         local amount = tonumber(message:sub(#_G.CommandGiveCash + 1):match("%d+")) -- Extract the amount from the message
-        print("Detected GiveCash command with amount:", amount)
         if amount then
             local args = {amount, "Cash"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
-        else
-            print("Invalid amount for GiveCash command")
+            commandExecuted = true
         end
-    else
+    end
+
+    if not commandExecuted then
         print("No matching command found")
     end
 end
 
 -- Listen to the player's chat messages
 local player = game.Players.LocalPlayer
-player.Chatted:Connect(function(message)
-    onPlayerChatted(player, message)
-end)
+player.Chatted:Connect(onPlayerChatted)
 
 -- Add Color Changer tab with a border
 local ColorChangerTab = Window:MakeTab({
@@ -360,6 +365,7 @@ MiscTab:AddButton({
     end
 })
 
+-- Add Remote Spy script button
 MiscTab:AddButton({
     Name = "Load Remote Spy",
     Callback = function()
@@ -377,4 +383,3 @@ OrionLib:MakeNotification({
 
 -- Initialize GUI
 OrionLib:Init()
-
