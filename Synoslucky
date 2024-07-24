@@ -248,6 +248,9 @@ local ColorChangerTab = Window:MakeTab({
     BorderColor = Color3.fromRGB(0, 0, 255)  -- Blue border
 })
 
+-- Add label to Color Changer tab (visible only on PC)
+ColorChangerTab:AddLabel("It doesn't work on mobile, only on PC")
+
 -- Add color picker
 local colorPicker = ColorChangerTab:AddColorpicker({
     Name = "Colorpicker",
