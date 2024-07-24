@@ -364,6 +364,82 @@ MiscTab:AddButton({
     end
 })
 
+-- Add Fly Mobile script button
+MiscTab:AddButton({
+    Name = "Load Fly Mobile",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V3-8031"))()
+    end
+})
+
+-- Add Server Event tab with a border
+local ServerEventTab = Window:MakeTab({
+    Name = "Server Event 🔄",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 165, 0)  -- Orange border
+})
+
+-- Variable to track the loop status for GiveCash
+local isGiveCashLooping = false
+
+-- Add button to toggle GiveCash loop
+ServerEventTab:AddButton({
+    Name = "Toggle GiveCash Loop",
+    Callback = function()
+        isGiveCashLooping = not isGiveCashLooping
+        if isGiveCashLooping then
+            while isGiveCashLooping do
+                local args = {
+                    [1] = workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.GiveCash
+                }
+                workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.PurchaseEvents:FireServer(unpack(args))
+                wait(0)  -- No delay
+            end
+        end
+    end
+})
+
+-- Variable to track the loop status for QuickRoll
+local isQuickRollLooping = false
+
+-- Add button to toggle QuickRoll loop
+ServerEventTab:AddButton({
+    Name = "Toggle QuickRoll Loop",
+    Callback = function()
+        isQuickRollLooping = not isQuickRollLooping
+        if isQuickRollLooping then
+            while isQuickRollLooping do
+                local args = {
+                    [1] = workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.QuickRoll
+                }
+                workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.PurchaseEvents:FireServer(unpack(args))
+                wait(0)  -- No delay
+            end
+        end
+    end
+})
+
+-- Variable to track the loop status for GiveCash1.5x
+local isGiveCash1_5xLooping = false
+
+-- Add button to toggle GiveCash1.5x loop
+ServerEventTab:AddButton({
+    Name = "Toggle GiveCash1.5x Loop",
+    Callback = function()
+        isGiveCash1_5xLooping = not isGiveCash1_5xLooping
+        if isGiveCash1_5xLooping then
+            while isGiveCash1_5xLooping do
+                local args = {
+                    [1] = workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events:FindFirstChild("1.5xCash")
+                }
+                workspace.Lobby.ServerEvents.SurfaceGui.Frame.Events.PurchaseEvents:FireServer(unpack(args))
+                wait(0)  -- No delay
+            end
+        end
+    end
+})
+
 -- Notification for script loaded
 OrionLib:MakeNotification({
     Name = "Script Loaded",
