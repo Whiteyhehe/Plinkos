@@ -1,1 +1,380 @@
+-- Load external library for GUI
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+
+-- Initialize UserInputService
+local UserInputService = game:GetService("UserInputService")
+
+-- Check if the platform is mobile
+local isMobile = UserInputService.TouchEnabled
+
+-- Create a customizable GUI window with a background image
+local Window = OrionLib:MakeWindow({
+    Name = "Plinko Script (made by synoslucky)",
+    HidePremium = false,
+    IntroEnabled = false,
+    IntroText = "Welcome to Plinko Script!",
+    SaveConfig = true,
+    ConfigFolder = "PlinkoScript",
+    Drag = not isMobile,  -- Disable dragging on mobile devices
+    Transparency = 0.6,  -- Set transparency to 60%
+    BackgroundImage = "rbxassetid://your-background-image-id"  -- Replace with your background image ID
+})
+
+-- Add Tag tab with a border
+local TagTab = Window:MakeTab({
+    Name = "Tags 🌟",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 215, 0)  -- Gold border
+})
+
+TagTab:AddLabel("Gives Free Custom Tag")
+
+-- Add dropdown for tag types
+TagTab:AddDropdown({
+    Name = "Select Tag",
+    Options = {"VIP", "Owner", "Tester"},
+    Default = "VIP",
+    Callback = function(Value)
+        local tagValue
+        if Value == "VIP" then
+            tagValue = -1
+        elseif Value == "Owner" then
+            tagValue = -2
+        elseif Value == "Tester" then
+            tagValue = -3
+        end
+        if tagValue then
+            game:GetService("ReplicatedStorage").TagEquip:FireServer(tagValue)
+        end
+    end
+})
+
+-- Add Currency Giver tab with a border
+local CurrencyGiverTab = Window:MakeTab({
+    Name = "Currency Giver 💰",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(0, 255, 0)  -- Green border
+})
+
+-- Add dropdown for BestWin amounts at the top
+CurrencyGiverTab:AddDropdown({
+    Name = "Select BestWin Amount",
+    Options = {"1t", "1q", "1qn"},
+    Default = "1t",
+    Callback = function(Value)
+        local amount
+        if Value == "1t" then
+            amount = 1000000000000  -- 1 trillion
+        elseif Value == "1q" then
+            amount = 1000000000000000  -- 1 quadrillion
+        elseif Value == "1qn" then
+            amount = 1000000000000000000  -- 1 quintillion
+        end
+        if amount then
+            local args = {amount, "BestWin"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        end
+    end
+})
+
+-- Add dropdown for cash amounts
+CurrencyGiverTab:AddDropdown({
+    Name = "Select Cash Amount",
+    Options = {"1t", "1q", "1qn"},
+    Default = "1t",
+    Callback = function(Value)
+        local amount
+        if Value == "1t" then
+            amount = 1000000000000  -- 1 trillion
+        elseif Value == "1q" then
+            amount = 1000000000000000  -- 1 quadrillion
+        elseif Value == "1qn" then
+            amount = 1000000000000000000  -- 1 quintillion
+        end
+        if amount then
+            local args = {amount, "Cash"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        end
+    end
+})
+
+-- Add dropdown for token amounts
+CurrencyGiverTab:AddDropdown({
+    Name = "Select Token Amount",
+    Options = {"1t", "1q", "1qn"},
+    Default = "1t",
+    Callback = function(Value)
+        local amount
+        if Value == "1t" then
+            amount = 1000000000000  -- 1 trillion
+        elseif Value == "1q" then
+            amount = 1000000000000000  -- 1 quadrillion
+        elseif Value == "1qn" then
+            amount = 1000000000000000000  -- 1 quintillion
+        end
+        if amount then
+            game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
+        end
+    end
+})
+
+-- Add textbox for custom BestWin amount below the BestWin dropdown
+CurrencyGiverTab:AddTextbox({
+    Name = "Custom BestWin Amount",
+    Default = "Enter amount here",
+    TextDisappear = true,
+    Callback = function(Value)
+        local amount = tonumber(Value)
+        if amount then
+            local args = {amount, "BestWin"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        else
+            print("Invalid BestWin amount")
+        end
+    end
+})
+
+-- Add textbox for custom cash amount
+CurrencyGiverTab:AddTextbox({
+    Name = "Custom Cash Amount",
+    Default = "Enter amount here",
+    TextDisappear = true,
+    Callback = function(Value)
+        local amount = tonumber(Value)
+        if amount then
+            local args = {amount, "Cash"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        else
+            print("Invalid cash amount")
+        end
+    end
+})
+
+-- Add textbox for custom token amount
+CurrencyGiverTab:AddTextbox({
+    Name = "Custom Token Amount",
+    Default = "Enter amount here",
+    TextDisappear = true,
+    Callback = function(Value)
+        local amount = tonumber(Value)
+        if amount then
+            game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
+        else
+            print("Invalid token amount")
+        end
+    end
+})
+
+-- Add Troll Commands tab with a border
+local TrollTab = Window:MakeTab({
+    Name = "Troll Commands 😈",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+-- Variables to hold command activation states
+_G.ActivateGiveCash = false
+_G.ActivateGiveTokens = false
+_G.ActivateGiveBest = false
+
+-- Default commands
+_G.CommandGiveCash = ";GiveCash"
+_G.CommandGiveTokens = ";GiveTokens"
+_G.CommandGiveBest = ";GiveBest"
+
+-- Function to activate all commands
+local function activateAllCommands()
+    _G.ActivateGiveCash = true
+    _G.ActivateGiveTokens = true
+    _G.ActivateGiveBest = true
+    print("All commands activated")
+end
+
+TrollTab:AddLabel("Troll Commands")
+
+-- Add Activate Commands button
+TrollTab:AddButton({
+    Name = "Activate Commands",
+    Callback = function()
+        activateAllCommands()
+    end
+})
+
+-- Add Commands dropdown
+TrollTab:AddDropdown({
+    Name = "Commands",
+    Options = {_G.CommandGiveCash, _G.CommandGiveTokens, _G.CommandGiveBest},
+    Default = _G.CommandGiveCash,
+    Callback = function(Value)
+        -- Handle selection if needed
+    end
+})
+
+-- Add textboxes to change command strings
+TrollTab:AddTextbox({
+    Name = "Change GiveCash Command",
+    Default = _G.CommandGiveCash,
+    TextDisappear = true,
+    Callback = function(Value)
+        _G.CommandGiveCash = Value
+        print("GiveCash command changed to:", _G.CommandGiveCash)
+    end
+})
+
+TrollTab:AddTextbox({
+    Name = "Change GiveTokens Command",
+    Default = _G.CommandGiveTokens,
+    TextDisappear = true,
+    Callback = function(Value)
+        _G.CommandGiveTokens = Value
+        print("GiveTokens command changed to:", _G.CommandGiveTokens)
+    end
+})
+
+TrollTab:AddTextbox({
+    Name = "Change GiveBest Command",
+    Default = _G.CommandGiveBest,
+    TextDisappear = true,
+    Callback = function(Value)
+        _G.CommandGiveBest = Value
+        print("GiveBest command changed to:", _G.CommandGiveBest)
+    end
+})
+
+-- Function to detect chat messages and execute commands
+local function onPlayerChatted(player, message)
+    -- Check for specific commands and execute corresponding functions
+    if _G.ActivateGiveBest and message:sub(1, #_G.CommandGiveBest) == _G.CommandGiveBest then
+        local amount = tonumber(message:sub(#_G.CommandGiveBest + 1):match("%d+")) -- Extract the amount from the message
+        print("Detected GiveBest command with amount:", amount)
+        if amount then
+            local args = {amount, "BestWin"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        else
+            print("Invalid amount for GiveBest command")
+        end
+    elseif _G.ActivateGiveTokens and message:sub(1, #_G.CommandGiveTokens) == _G.CommandGiveTokens then
+        local amount = tonumber(message:sub(#_G.CommandGiveTokens + 1):match("%d+")) -- Extract the amount from the message
+        print("Detected GiveTokens command with amount:", amount)
+        if amount then
+            game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
+        else
+            print("Invalid amount for GiveTokens command")
+        end
+    elseif _G.ActivateGiveCash and message:sub(1, #_G.CommandGiveCash) == _G.CommandGiveCash then
+        local amount = tonumber(message:sub(#_G.CommandGiveCash + 1):match("%d+")) -- Extract the amount from the message
+        print("Detected GiveCash command with amount:", amount)
+        if amount then
+            local args = {amount, "Cash"}
+            game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+        else
+            print("Invalid amount for GiveCash command")
+        end
+    else
+        print("No matching command found")
+    end
+end
+
+-- Listen to the player's chat messages
+local player = game.Players.LocalPlayer
+player.Chatted:Connect(function(message)
+    onPlayerChatted(player, message)
+end)
+
+-- Add Color Changer tab with a border
+local ColorChangerTab = Window:MakeTab({
+    Name = "Color Changer 🎨",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(0, 0, 255)  -- Blue border
+})
+
+ColorChangerTab:AddLabel("Doesnt work on mobile,only on Pc")
+
+-- Add color picker
+local colorPicker = ColorChangerTab:AddColorpicker({
+    Name = "Colorpicker",
+    Default = Color3.fromRGB(255, 255, 255),  -- Default to white
+    Callback = function(Value)
+        print(Value)
+    end
+})
+
+-- Set the color picker to white initially
+colorPicker:Set(Color3.fromRGB(255, 255, 255))
+
+-- Add Ball Spam tab with a border
+local BallSpamTab = Window:MakeTab({
+    Name = "Ball Spam 🎱",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 165, 0)  -- Orange border
+})
+
+-- Variable to track ball spam status
+local isSpamming = false
+
+BallSpamTab:AddLabel("spam alot of ball stats")
+
+-- Add toggle for spam ball
+BallSpamTab:AddButton({
+    Name = "Toggle Spam Ball",
+    Callback = function()
+        isSpamming = not isSpamming
+        if isSpamming then
+            while isSpamming do
+                game:GetService("ReplicatedStorage").TakeCashAddBall:FireServer()
+                wait(0)  -- No delay
+            end
+        end
+    end
+})
+
+-- Add Misc tab with a border
+local MiscTab = Window:MakeTab({
+    Name = "Misc 🔧",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(128, 128, 128)  -- Gray border
+})
+
+-- Add Universal Scripts label
+MiscTab:AddLabel("Universal Scripts")
+
+-- Add Inf Yield script button
+MiscTab:AddButton({
+    Name = "Load Inf Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Inf-yeild-New-Version-1836"))()
+    end
+})
+
+-- Add Nameless Admin script button
+MiscTab:AddButton({
+    Name = "Load Nameless Admin",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-nameless-admin-15646"))()
+    end
+})
+
+MiscTab:AddButton({
+    Name = "Load Remote Spy",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Just-A-Script-Rewrite-12363"))()
+    end
+})
+
+-- Notification for script loaded
+OrionLib:MakeNotification({
+    Name = "Script Loaded",
+    Content = "Plinko Script is ready to use!",
+    Image = "rbxassetid://4483345998",
+    Time = 5
+})
+
+-- Initialize GUI
+OrionLib:Init()
 
