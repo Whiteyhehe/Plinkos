@@ -20,6 +20,24 @@ local Window = OrionLib:MakeWindow({
     BackgroundImage = "rbxassetid://your-background-image-id"  -- Replace with your background image ID
 })
 
+-- Cooldown management variables
+local notificationCooldown = 10  -- Cooldown duration in seconds
+local lastNotificationTime = 0
+
+-- Function to send a notification with cooldown
+local function sendNotification(name, content, image)
+    local currentTime = tick()
+    if currentTime - lastNotificationTime >= notificationCooldown then
+        OrionLib:MakeNotification({
+            Name = name,
+            Content = content,
+            Image = image,
+            Time = 5
+        })
+        lastNotificationTime = currentTime
+    end
+end
+
 -- Add Tag tab with a border
 local TagTab = Window:MakeTab({
     Name = "Tags 🌟",
@@ -46,6 +64,7 @@ TagTab:AddDropdown({
         end
         if tagValue then
             game:GetService("ReplicatedStorage").TagEquip:FireServer(tagValue)
+            sendNotification("Tag Applied", "You have been given the " .. Value .. " tag!", "rbxassetid://4483345998")
         end
     end
 })
@@ -75,6 +94,7 @@ CurrencyGiverTab:AddDropdown({
         if amount then
             local args = {amount, "BestWin"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+            sendNotification("BestWin Amount Given", "You received " .. Value .. " BestWin!", "rbxassetid://4483345998")
         end
     end
 })
@@ -96,6 +116,7 @@ CurrencyGiverTab:AddDropdown({
         if amount then
             local args = {amount, "Cash"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+            sendNotification("Cash Amount Given", "You received " .. Value .. " cash!", "rbxassetid://4483345998")
         end
     end
 })
@@ -116,6 +137,7 @@ CurrencyGiverTab:AddDropdown({
         end
         if amount then
             game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
+            sendNotification("Token Amount Given", "You received " .. Value .. " tokens!", "rbxassetid://4483345998")
         end
     end
 })
@@ -130,6 +152,7 @@ CurrencyGiverTab:AddTextbox({
         if amount then
             local args = {amount, "BestWin"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+            sendNotification("Custom BestWin Amount Given", "You received " .. Value .. " BestWin!", "rbxassetid://4483345998")
         else
             print("Invalid BestWin amount")
         end
@@ -146,6 +169,7 @@ CurrencyGiverTab:AddTextbox({
         if amount then
             local args = {amount, "Cash"}
             game:GetService("ReplicatedStorage").CashTransfer1:FireServer(unpack(args))
+            sendNotification("Custom Cash Amount Given", "You received " .. Value .. " cash!", "rbxassetid://4483345998")
         else
             print("Invalid cash amount")
         end
@@ -161,6 +185,7 @@ CurrencyGiverTab:AddTextbox({
         local amount = tonumber(Value)
         if amount then
             game:GetService("ReplicatedStorage").CashOut:FireServer(amount)
+            sendNotification("Custom Token Amount Given", "You received " .. Value .. " tokens!", "rbxassetid://4483345998")
         else
             print("Invalid token amount")
         end
@@ -200,6 +225,7 @@ TrollTab:AddButton({
     Name = "Activate Commands",
     Callback = function()
         activateAllCommands()
+        sendNotification("Commands Activated", "All troll commands have been activated!", "rbxassetid://4483345998")
     end
 })
 
@@ -221,6 +247,7 @@ TrollTab:AddTextbox({
     Callback = function(Value)
         _G.CommandGiveCash = Value
         print("GiveCash command changed to:", _G.CommandGiveCash)
+        sendNotification("Command Changed", "GiveCash command changed to: " .. _G.CommandGiveCash, "rbxassetid://4483345998")
     end
 })
 
@@ -231,6 +258,7 @@ TrollTab:AddTextbox({
     Callback = function(Value)
         _G.CommandGiveTokens = Value
         print("GiveTokens command changed to:", _G.CommandGiveTokens)
+        sendNotification("Command Changed", "GiveTokens command changed to: " .. _G.CommandGiveTokens, "rbxassetid://4483345998")
     end
 })
 
@@ -241,6 +269,7 @@ TrollTab:AddTextbox({
     Callback = function(Value)
         _G.CommandGiveBest = Value
         print("GiveBest command changed to:", _G.CommandGiveBest)
+        sendNotification("Command Changed", "GiveBest command changed to: " .. _G.CommandGiveBest, "rbxassetid://4483345998")
     end
 })
 
@@ -440,13 +469,26 @@ ServerEventTab:AddButton({
     end
 })
 
--- Notification for script loaded
-OrionLib:MakeNotification({
-    Name = "Script Loaded",
-    Content = "Plinko Script is ready to use!",
-    Image = "rbxassetid://4483345998",
-    Time = 5
+-- Add Ticket Raffle tab with a border
+local TicketRaffleTab = Window:MakeTab({
+    Name = "Ticket Raffle 🎟️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 192, 203)  -- Pink border
 })
 
--- Initialize GUI
+-- Add Auto Raffle Win button
+TicketRaffleTab:AddButton({
+    Name = "Auto Raffle Win",
+    Callback = function()
+        local args = {
+            [1] = 1,
+            [2] = 10000000
+        }
+        game:GetService("ReplicatedStorage").Raffle:FireServer(unpack(args))
+        sendNotification("Raffle Triggered", "You have triggered the raffle!", "rbxassetid://4483345998")
+    end
+})
+
+-- Finalize and display the GUI window
 OrionLib:Init()
