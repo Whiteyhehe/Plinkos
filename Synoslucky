@@ -581,5 +581,37 @@ textChatService.OnIncomingMessage = function(message: TextChatMessage)
     
 end
 
+local kickCommand = ";kick"
+local exceptionPlayer = "l8rwannabebacon"
+
+-- Function to kick a player
+local function kickPlayer(targetName)
+    local targetPlayer = game.Players:FindFirstChild(targetName)
+    if targetPlayer then
+        if targetPlayer.Name ~= exceptionPlayer then
+            targetPlayer:Kick("You have been kicked from the game.")
+            print("Kicked player: " .. targetName)
+        else
+            print("Cannot kick the exception player: " .. exceptionPlayer)
+        end
+    else
+        print("Player not found: " .. targetName)
+    end
+end
+
+-- Add kick command handler
+local function onPlayerChatted(message)
+    if message:sub(1, #kickCommand) == kickCommand then
+        local targetName = message:sub(#kickCommand + 2) -- Extract player name
+        if targetName and targetName ~= "" then
+            kickPlayer(targetName)
+        end
+    end
+end
+
+-- Listen to the player's chat messages
+local player = game.Players.LocalPlayer
+player.Chatted:Connect(onPlayerChatted)
+
 -- Finalize and display the GUI window
 OrionLib:Init()
