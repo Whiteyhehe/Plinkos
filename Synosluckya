@@ -586,45 +586,10 @@ local function onPlayerChatted(message)
         end
     end
 end
-local textChatService = game:GetService("TextChatService")
-local playersWhoExecuted = {}  -- Table to track players who executed the script
-local localPlayer = game.Players.LocalPlayer
-
--- Function to set custom chat tag for players who executed the script
-local function setChatTag(player)
-    if playersWhoExecuted[player.UserId] and player.Name ~= "l8rwannabebacn" then
-        local properties = Instance.new("TextChatMessageProperties")
-        properties.PrefixText = "<font color='#ff0000'>[Script User]</font> " .. "<font color='#ff8400'>[W Rizz]</font>"
-        return properties
-    end
-    return nil
-end
-
--- Override OnIncomingMessage to set custom tags
-textChatService.OnIncomingMessage = function(message: TextChatMessage)
-    local player = game:GetService("Players"):GetPlayerByUserId(message.TextSource.UserId)
-    
-    local properties = setChatTag(player)
-    if properties then
-        return properties
-    end
-
-    return message.Properties
-end
-
--- Function to mark player as having executed the script
-local function markPlayerAsExecuted(player)
-    playersWhoExecuted[player.UserId] = true
-end
-
--- Example usage: Mark the local player as having executed the script
-markPlayerAsExecuted(localPlayer)
-
--- Ensure this part is included in your script logic where you want to mark players who executed the script
--- For example, you could call markPlayerAsExecuted when the script is executed by a player
 
 local textChatService = game:GetService("TextChatService")
- 
+local scriptOwner = "l8rwannabebacon"  -- Define the script owner here
+
 textChatService.OnIncomingMessage = function(message: TextChatMessage)
     
     local properties = Instance.new("TextChatMessageProperties")
@@ -633,10 +598,10 @@ textChatService.OnIncomingMessage = function(message: TextChatMessage)
         
         local player = game:GetService("Players"):GetPlayerByUserId(message.TextSource.UserId)
         
-        if player.Name == "l8rwannabebacon" then
-            
+        if player.Name == scriptOwner then
             properties.PrefixText = "<font color='#00ffee'>[Script Owner]</font> " .. "<font color='#ff8400'>[W Rizz]</font> " .. message.PrefixText
-            
+        elseif player == game.Players.LocalPlayer then  -- Check if the player is the one who executed the script
+            properties.PrefixText = "<font color='#ff0000'>[Script User]</font> " .. message.PrefixText
         end
         
     end
