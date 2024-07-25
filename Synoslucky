@@ -450,7 +450,7 @@ MiscTab:AddButton({
 MiscTab:AddButton({
     Name = "Load Nameless Admin",
     Callback = function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-nameless-admin-15646"))()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Nameless-Admin-Official-15022"))()
     end
 })
 
