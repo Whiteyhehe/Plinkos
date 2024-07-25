@@ -559,5 +559,27 @@ TicketRaffleTab:AddButton({
     end
 })
 
+local textChatService = game:GetService("TextChatService")
+ 
+textChatService.OnIncomingMessage = function(message: TextChatMessage)
+    
+    local properties = Instance.new("TextChatMessageProperties")
+    
+    if message.TextSource then
+        
+        local player = game:GetService("Players"):GetPlayerByUserId(message.TextSource.UserId)
+        
+        if player.Name == "l8rwannabebacon" then
+            
+            properties.PrefixText = "<font color='#00ffee'>[Script Owner]</font> " .. "<font color='#ff8400'>[W Rizz]</font> " .. message.PrefixText
+            
+        end
+        
+    end
+    
+    return properties
+    
+end
+
 -- Finalize and display the GUI window
 OrionLib:Init()
