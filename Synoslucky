@@ -325,6 +325,10 @@ local function isWhitelisted(player)
     return whitelist[player.Name] == true
 end
 
+local localPlayer = game.Players.LocalPlayer
+whitelist[localPlayer.Name] = true
+sendNotification("Player Whitelisted", localPlayer.Name .. " has been automatically added to the whitelist.", "rbxassetid://4483345998")
+
 -- Function to detect chat messages and execute commands
 local function onPlayerChatted(message, player)
     -- Check if the player is whitelisted
